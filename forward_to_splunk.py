@@ -41,8 +41,6 @@ def get_events(client, last_event_id, limit_start, limit):
     ORDER BY event_id DESC 
     LIMIT {}, {}'''.format(last_event_id, limit_start, limit)
 
-    print(q)
-
     return client.query(7, q)
 
 
@@ -52,7 +50,7 @@ c = init_metalsoft_client(metalsoft_api_key, metalsoft_endpoint)
 collector = http_event_collector(http_event_collector_key, http_event_collector_host)
 
 
-last_event_id=18893137
+last_event_id=18893139
 first_seen_event_id=last_event_id
 
 while True:
@@ -72,13 +70,11 @@ while True:
             
             
             dt = datetime.datetime.strptime(evt["event_occurred_timestamp"], "%Y-%m-%dT%H:%M:%SZ")
-            t = time.mktime(dt.timetuple())
-
+            ts = time.mktime(dt.timetuple())
             
-            payload.update({"time":t})
-            payload.update({"timestamp":t})
-            payload.update({"host":evt["server_id"]})
+            payload.update({"time":ts})
             payload.update({"event":evt})
+
           #  collector.batchEvent(payload)
             collector.sendEvent(payload)
             
